@@ -1,3 +1,4 @@
+
 import os
 from fastapi import FastAPI, Query
 from crewai import Agent, Task, Crew, Process
@@ -5,12 +6,11 @@ from dotenv import load_dotenv
 
 # 1. CRITICAL SETUP
 load_dotenv()
-os.environ["GOOGLE_API_KEY"] = "AIzaSyCiRpllfyFxYQUILL_7ZPI39Pv8VRLeqVc"
+api_key = os.getenv("GOOGLE_API_KEY")
 
 app = FastAPI()
 
 # 2. DEFINE THE AGENTS
-# Using 'google/gemini-1.5-flash' to bypass 'unmapped' errors
 manager_agent = Agent(
     role='System Manager',
     goal='Coordinate workflows and manage 95GB data tasks',
@@ -20,7 +20,7 @@ manager_agent = Agent(
     allow_delegation=False
 )
 
-# 3. API ROUTES (The fix for your 404)
+# 3. API ROUTES
 @app.get("/")
 def health():
     return {"status": "online", "system": "Multi-Agent Coordinator"}
@@ -56,4 +56,4 @@ def process_task(query: str = Query(...)):
         return {"status": "error", "message": str(e)}
 
 # 4. START COMMAND:
-# python3 -m uvicorn main:app --host 127.0.0.1 --port 8000
+# python3 -m uvicorn main:app --host 0.0.0.0 --port 8080
